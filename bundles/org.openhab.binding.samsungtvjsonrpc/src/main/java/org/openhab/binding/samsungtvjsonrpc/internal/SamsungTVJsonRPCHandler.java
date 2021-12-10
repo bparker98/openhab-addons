@@ -1,7 +1,15 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 
 package org.openhab.binding.samsungtvjsonrpc.internal;
 
@@ -36,6 +44,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * The {@link SamsungTVJsonRPCHandler} class handles JSON RPC stuff
+ *
+ * @author Brandon Parker - Initial contribution
+ */
 @NonNullByDefault
 public class SamsungTVJsonRPCHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SamsungTVJsonRPCHandler.class);
@@ -71,45 +84,34 @@ public class SamsungTVJsonRPCHandler extends BaseThingHandler {
         String channel = channelUID.getId();
         if (this.jsonRPCHandler != null) {
             if (command.equals(RefreshType.REFRESH)) {
-                switch (channel.hashCode()) {
-                    case -815004468:
-                        if (channel.equals("keycode")) {
-                            this.updateState(channel, (State) this.lastStates.getOrDefault("keycode", UnDefType.UNDEF));
-                        }
+                switch (channel) {
+                    case SamsungTVJsonRPCBindingConstants.CHANNEL_KEYCODE:
+                        this.updateState(channel, (State) this.lastStates.getOrDefault("keycode", UnDefType.UNDEF));
                         break;
-                    case 106858757:
-                        if (channel.equals("power")) {
-                            this.updateState(channel, this.getPowerState());
-                        }
+                    case SamsungTVJsonRPCBindingConstants.CHANNEL_POWER:
+                        this.updateState(channel, this.getPowerState());
                         break;
-                    case 605634661:
-                        if (channel.equals("inputsource")) {
-                            this.updateState(channel, this.getInputSource());
-                        }
+                    case SamsungTVJsonRPCBindingConstants.CHANNEL_INPUT_SOURCE:
+                        this.updateState(channel, this.getInputSource());
+                        break;
                 }
             } else {
-                switch (channel.hashCode()) {
-                    case -815004468:
-                        if (channel.equals("keycode")) {
-                            State state = this.jsonRPCHandler.sendKey(command);
-                            if (state != null) {
-                                this.updateState(channel, state);
-                            }
+                switch (channel) {
+                    case SamsungTVJsonRPCBindingConstants.CHANNEL_KEYCODE:
+                        State state = this.jsonRPCHandler.sendKey(command);
+                        if (state != null) {
+                            this.updateState(channel, state);
+                        }
+                    case SamsungTVJsonRPCBindingConstants.CHANNEL_POWER:
+                        if (command == OnOffType.ON) {
+                            this.sendPowerCommandWithWOL(command);
+                        } else {
+                            this.jsonRPCHandler.setPowerState(command);
                         }
                         break;
-                    case 106858757:
-                        if (channel.equals("power")) {
-                            if (command == OnOffType.ON) {
-                                this.sendPowerCommandWithWOL(command);
-                            } else {
-                                this.jsonRPCHandler.setPowerState(command);
-                            }
-                        }
+                    case SamsungTVJsonRPCBindingConstants.CHANNEL_INPUT_SOURCE:
+                        this.jsonRPCHandler.setInputSource(command);
                         break;
-                    case 605634661:
-                        if (channel.equals("inputsource")) {
-                            this.jsonRPCHandler.setInputSource(command);
-                        }
                 }
             }
 
@@ -165,7 +167,7 @@ public class SamsungTVJsonRPCHandler extends BaseThingHandler {
 
                 public void run() {
                     ++this.count;
-                    if (this.count < 10 && SamsungTVJsonRPCHandler.this.lastStates.get("power") != command) {
+                    if (this.count < 10 && !(SamsungTVJsonRPCHandler.this.lastStates.get("power").equals(command))) {
                         SamsungTVJsonRPCHandler.this.scheduler.schedule(this, 100L, TimeUnit.MILLISECONDS);
                         State state = SamsungTVJsonRPCHandler.this.jsonRPCHandler.setPowerState(command);
                         if (state != null) {
@@ -195,12 +197,12 @@ public class SamsungTVJsonRPCHandler extends BaseThingHandler {
             this.logger.warn("Skipping poll due to null JsonRPCHandler");
         } else {
             State inputSource = this.getInputSource();
-            if (this.lastStates.get("inputsource") != inputSource) {
+            if (!this.lastStates.get("inputsource").equals(inputSource)) {
                 this.updateState("inputsource", inputSource);
             }
 
             State powerState = this.getPowerState();
-            if (this.lastStates.get("power") != powerState) {
+            if (!this.lastStates.get("power").equals(powerState)) {
                 this.updateState("power", powerState);
             }
 
@@ -259,7 +261,7 @@ public class SamsungTVJsonRPCHandler extends BaseThingHandler {
                     }
 
                     this.logger.info("Got token {}", token);
-                    if (token != null && !token.equals("")) {
+                    if (token != null && !"".equals(token)) {
                         this.updateStatus(ThingStatus.ONLINE);
                         Configuration conf = this.editConfiguration();
                         conf.put("authToken", token);

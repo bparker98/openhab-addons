@@ -1,14 +1,21 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 
 package org.openhab.binding.samsungtvjsonrpc.internal;
 
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -17,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
@@ -40,6 +46,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link SamsungTVJsonRPCHandlerFactory} class does factory pattern stuff
+ *
+ * @author Brandon Parker - Initial contribution
+ */
 @NonNullByDefault
 @Component(configurationPid = { "binding.samsungtvjsonrpc" }, service = { ThingHandlerFactory.class })
 public class SamsungTVJsonRPCHandlerFactory extends BaseThingHandlerFactory {
@@ -61,48 +72,55 @@ public class SamsungTVJsonRPCHandlerFactory extends BaseThingHandlerFactory {
         this.clientBuilder = clientBuilder.connectTimeout(5L, TimeUnit.SECONDS).readTimeout(5L, TimeUnit.SECONDS);
         this.httpClientFactory = httpClientFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.httpsClient = httpClientFactory.createHttpClient("samsungtvjsonrpc");
+        this.httpsClient = httpClientFactory.createHttpClient(SamsungTVJsonRPCBindingConstants.BINDING_ID);
 
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
+
             TrustManager[] trustAllCerts = new TrustManager[] { new X509ExtendedTrustManager() {
-                public void checkClientTrusted(@Nullable X509Certificate[] chain, @Nullable String authType)
+                @Override
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
                         throws CertificateException {
                 }
 
-                public void checkServerTrusted(@Nullable X509Certificate[] chain, @Nullable String authType)
+                @Override
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
                         throws CertificateException {
                 }
 
-                @Nullable
-                public X509Certificate[] getAcceptedIssuers() {
+                @Override
+                public X509Certificate @Nullable [] getAcceptedIssuers() {
                     return null;
                 }
 
-                public void checkClientTrusted(@Nullable X509Certificate[] chain, @Nullable String authType,
+                @Override
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
                         @Nullable Socket socket) throws CertificateException {
                 }
 
-                public void checkServerTrusted(@Nullable X509Certificate[] chain, @Nullable String authType,
+                @Override
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
                         @Nullable Socket socket) throws CertificateException {
                 }
 
-                public void checkClientTrusted(@Nullable X509Certificate[] chain, @Nullable String authType,
+                @Override
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
                         @Nullable SSLEngine engine) throws CertificateException {
                 }
 
-                public void checkServerTrusted(@Nullable X509Certificate[] chain, @Nullable String authType,
+                @Override
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
                         @Nullable SSLEngine engine) throws CertificateException {
                 }
             } };
-            sslContext.init((KeyManager[]) null, trustAllCerts, (SecureRandom) null);
+            sslContext.init(null, trustAllCerts, null);
+
             this.httpsClient.getSslContextFactory().setSslContext(sslContext);
-        } catch (NoSuchAlgorithmException var5) {
-            this.logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'",
-                    var5.getMessage(), var5);
-        } catch (KeyManagementException var6) {
-            this.logger.warn("An exception occurred while initialising the SSL context : '{}'", var6.getMessage(),
-                    var6);
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
+                    e);
+        } catch (KeyManagementException e) {
+            logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
         }
     }
 
