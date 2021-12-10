@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="samsungtvjsonrpc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="samsungtvjsonrpc">
+		<!-- Comment this in for Things which need a Bridge to function.
+			<supported-bridge-type-refs>
+			<bridge-type-ref id="Samsung TV JSON-RPCBridge" />
+			</supported-bridge-type-refs>
+		-->
+
+		<label>Samsung TV JSON-RPC Thing</label>
+		<description>Thing for Samsung TV JSON-RPC Binding</description>
+
+		<channels>
+			<channel id="inputsource" typeId="inputsource"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="keycode" typeId="keycode"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<default>1516</default>
+				<label>Port</label>
+				<description>JSON-RPC port</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>2</default>
+			</parameter>
+			<parameter name="macAddress" type="text">
+				<label>MAC Address</label>
+				<description>MAC Address for Wake-On-LAN</description>
+				<default></default>
+			</parameter>
+			<parameter name="authToken" type="text" readOnly="true">
+				<label>Auth Token</label>
+				<description>Auth token for JSON-RPC connection</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="inputsource">
+		<item-type>String</item-type>
+		<label>Input Source</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>The current input source.</description>
+		<state>
+			<options>
+				<option value="TV">TV</option>
+				<option value="HDMI1">HDMI1</option>
+				<option value="HDMI2">HDMI2</option>
+				<option value="HDMI3">HDMI3</option>
+				<option value="HDMI4">HDMI4</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="keycode">
+		<item-type>String</item-type>
+		<label>Key Code</label>
+		<description>The key code channel emulates the infrared remote controller and
+			allows to send virtual button presses.
+		</description>
+		<state>
+			<options>
+				<option value="cursorUp">cursorUp</option>
+				<option value="cursorDn">cursorDn</option>
+				<option value="cursorLeft">cursorLeft</option>
+				<option value="cursorRight">cursorRight</option>
+				<option value="menu">menu</option>
+				<option value="firstScreen">firstScreen</option>
+				<option value="fastforward">fastforward</option>
+				<option value="rewind">rewind</option>
+				<option value="play">play</option>
+				<option value="stop">stop</option>
+				<option value="pause">pause</option>
+				<option value="enter">enter</option>
+				<option value="exit">exit</option>
+				<option value="power">power</option>
+				<option value="number1">number1</option>
+				<option value="number2">number2</option>
+				<option value="number3">number3</option>
+				<option value="number4">number4</option>
+				<option value="number5">number5</option>
+				<option value="number6">number6</option>
+				<option value="number7">number7</option>
+				<option value="number8">number8</option>
+				<option value="number9">number9</option>
+				<option value="number0">number0</option>
+				<option value="caption">caption</option>
+				<option value="dash">dash</option>
+				<option value="red">red</option>
+				<option value="green">green</option>
+				<option value="yellow">yellow</option>
+				<option value="blue">blue</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
